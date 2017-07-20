@@ -1,0 +1,32 @@
+@CHARSET "UTF-8";
+
+.todolist {
+	margin: 10px 0px;
+}
+
+.todolist .content {
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 5px rgba(0, 0, 0, .075);
+	background-color: #f8f8f8;
+	background-image: linear-gradient(to bottom, #fff 0%, #f8f8f8 100%);
+	border: 1px solid #e7e7e7;
+	padding: 0px;
+}
+
+.todolist .content H2 {
+	text-align: center;
+	font-size: 14pt;
+	border-bottom: 1px solid #e7e7e7;
+	vertical-align: middle;
+	line-height: 32pt;
+	margin: 0px;
+}
+
+.todolist .content UL {
+	margin: 10px;
+}
+
+.todolist .content .operations {
+	text-align: center;
+	border-top: 1px solid #e7e7e7;
+	padding: 2px;
+}
