@@ -2,13 +2,17 @@ var routes = {
 	main : "http://localhost:8080/todolist/rest/todos"
 }
 
+/**
+* Cache de objetos
+**/
 var dom = {
 	main : $('#main'),
 	templateList : $('#templateList').html(),
 	modal : $('#myModal'),
 	formTodo : $('#formTodo'),
 	itemContent : $('#itemContent'),
-	templateItem : $('#templateItem').html()
+	templateItem : $('#templateItem').html(),
+	todoName : $('#todoName')
 }
 
 /**
@@ -29,6 +33,9 @@ var removeItem = function(item){
 }
 
 
+/**
+* Função responsável por limpar os dados do formulário
+**/
 var clearModal = function(){
 	dom.formTodo[0].reset();
 	dom.itemContent.html(''); // Limpar os itens
@@ -40,13 +47,19 @@ var clearModal = function(){
  */
 var saveTodo = function(){
 	
-	
-	data = { "name" :  "" };
-	
+	data = { "name" :  dom.todoName.val() , "items" : [] };
 	// Remover itens disableds
 	dom.itemContent.find('.form-group.disabled').remove();
-	
-	return;
+	// Push de Itens
+	dom.itemContent.find('.form-group').each(function( index , item ){
+		// TODO : Validar aqui se os dados estão corretos
+		var item = {
+			"name" : $(item).find('.name').val() ,
+			"value" : $(item).find('.value').val()
+		}
+		data.items.push( item );
+	});
+
 	
 	// Mustache.parse(dom.templateList); 
 	// dom.main.append( Mustache.render(dom.templateList, { } ) );
@@ -58,7 +71,10 @@ var saveTodo = function(){
 		dataType : 'json',
 		contentType: "application/json",
 		success : function(result){
-			console.log(result);
+			clearModal();
+			dom.modal.modal('hide');
+			// TODO : Adicionar o novo item
+			dom.main.append( Mustache.render(dom.templateList, data ) );
 		}, 
 		error : function(error){
 			console.log(error);
@@ -78,7 +94,7 @@ var toogleCheck = function(itemId,target){
 
 var addEdit = function(i){
 	
-	dom.modal.modal('show')
+	dom.modal.modal('show');
 	
 	if( i == 0 ){
 		// Novo
