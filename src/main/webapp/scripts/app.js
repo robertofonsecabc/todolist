@@ -11,10 +11,23 @@ var dom = {
 	templateItem : $('#templateItem').html()
 }
 
+/**
+* Adicionar item
+**/
 var addItem = function(){
+	// contabilizar a quantidade de itens
+	var itens = dom.itemContent.find('.form-group').length;
 	Mustache.parse(dom.templateItem);
-	dom.itemContent.append( Mustache.render(dom.templateItem, { }) );
+	dom.itemContent.append( Mustache.render(dom.templateItem, {  item : itens } ) );
 }
+
+/**
+* Esconder um item para ser removido no processamento
+**/
+var removeItem = function(item){
+	$( dom.itemContent.find('.form-group')[item] ).addClass('disabled').slideUp();
+}
+
 
 var clearModal = function(){
 	dom.formTodo[0].reset();
@@ -30,7 +43,8 @@ var saveTodo = function(){
 	
 	data = { "name" :  "" };
 	
-	
+	// Remover itens disableds
+	dom.itemContent.find('.form-group.disabled').remove();
 	
 	return;
 	
