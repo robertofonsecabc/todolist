@@ -11,7 +11,7 @@
 </head>
 <body>
 	
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -20,27 +20,23 @@
 			</div>
 			<div class="modal-body">
 				<form name="formTodo" id="formTodo" class="form-horizontal" method="POST">
-					
 					<div class="form-group">
 						<label for="recipient-name" class="col-sm-2 control-label">Name:</label>
 						<div class="col-sm-9">
-							<input class="form-control" type="text" name="name" id="name" value="">
+							<input class="form-control" type="text" name="todoName" id="todoName" value="">
 						</div>
 					</div>
 					
 					<hr/>
-					
-					<div class="form-group">
-						<label for="recipient-name" class="col-sm-2 control-label">Item:</label>
-						<div class="col-sm-5">
-							<input class="form-control" type="text" name="items[]" value="">
-						</div>
-						<div class="col-sm-4">
+					<div class="row">
+						<div class="col-xs-12">
+							 <button type="button" class="btn btn-default" onclick="addItem();"> <i class="glyphicon glyphicon-plus"></i> Adicionar Item</button>
 						</div>
 					</div>
-					
-					
-				
+					<hr/>
+					<div id="itemContent">
+						
+					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
@@ -120,7 +116,26 @@
 			</div>
 		</div>
 	</script>
-	
+
+	<script id="templateItem" type="x-tmpl-mustache">
+		<div class="form-group">
+			<input type="hidden" name="" value="" />
+			<label for="recipient-name" class="col-sm-2 control-label">Item:</label>
+			<div class="col-sm-4">
+				<input class="form-control" type="text" name="items_{{ item }}_name" id="items_{{ item }}_name" value="" />
+			</div>
+			<div class="col-sm-4">
+				<div class="input-group">
+					<span class="input-group-addon">R$</span>
+					<input class="form-control" type="text" name="items_{{ item }}_value" id="items_{{ item }}_value" value="" />
+				</div>
+			</div>
+			<div class="col-sm-1">
+				 <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-remove"></i></button>
+			</div>
+		</div>
+	</script>
+
 	<script src="scripts/libs/modernizr-2.8.3.min.js"></script>
 	<script src="scripts/libs/jquery-2.1.1.js"></script>
 	<script src="scripts/libs/bootstrap.js"></script>
