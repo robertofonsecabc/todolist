@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -33,10 +32,6 @@ public class Item implements Serializable {
 	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 
-	@Version
-	@Column(name = "version")
-	private int version;
-	
 	@XmlTransient
 	@ManyToOne(optional = false,fetch=FetchType.LAZY)
 	private Todo todo;
@@ -54,14 +49,6 @@ public class Item implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public int getVersion() {
-		return version;
-	}
-
-	public void setVersion(int version) {
-		this.version = version;
 	}
 
 	public Todo getTodo() {
@@ -109,7 +96,6 @@ public class Item implements Serializable {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((todo == null) ? 0 : todo.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		result = prime * result + version;
 		return result;
 	}
 
@@ -146,8 +132,6 @@ public class Item implements Serializable {
 			if (other.value != null)
 				return false;
 		} else if (!value.equals(other.value))
-			return false;
-		if (version != other.version)
 			return false;
 		return true;
 	}

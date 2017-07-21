@@ -17,7 +17,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -46,11 +45,6 @@ public class Todo implements Serializable {
 	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 
-	@XmlTransient
-	@Version
-	@Column(name = "version")
-	private int version;
-
 	@Column(length = 50, nullable = false)
 	private String name;
 	
@@ -75,14 +69,6 @@ public class Todo implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public int getVersion() {
-		return version;
-	}
-
-	public void setVersion(int version) {
-		this.version = version;
 	}
 
 	public String getName() {
@@ -151,7 +137,6 @@ public class Todo implements Serializable {
 				+ ((lastUpdate == null) ? 0 : lastUpdate.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((total == null) ? 0 : total.hashCode());
-		result = prime * result + version;
 		return result;
 	}
 
@@ -199,8 +184,6 @@ public class Todo implements Serializable {
 				return false;
 		} else if (!total.equals(other.total))
 			return false;
-		if (version != other.version)
-			return false;
 		return true;
 	}
 	
@@ -210,7 +193,6 @@ public class Todo implements Serializable {
 		
 		StringBuilder builder = new StringBuilder("{");
 		builder.append("id: ").append(id).append(", ");
-		builder.append("version: ").append(version).append(", ");
 		builder.append("name: ").append(name).append(", ");
 		builder.append("creationDate: ").append(creationDate).append(", ");
 		builder.append("lastUpdate: ").append(lastUpdate).append(", ");

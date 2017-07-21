@@ -1,5 +1,6 @@
 var routes = {
-	main : "http://localhost:8080/todolist/rest/todos"
+	main : "http://localhost:8080/todolist/rest/todos",
+	item : "http://localhost:8080/todolist/rest/items",
 }
 
 /**
@@ -29,8 +30,35 @@ var addItem = function(){
 /**
 * Esconder um item para ser removido no processamento
 **/
-var removeItem = function(item){
-	$( dom.itemContent.find('.form-group')[item] ).addClass('disabled').slideUp();
+var removeItem = function(object ){
+	var item = $(object);
+	var id = parseInt(item.attr('data-id'));
+	if( id > 0 ){
+		$.ajax({
+			type: "DELETE",
+			url: routes.item + '/' + id,
+			dataType : 'json',
+			contentType: "application/json",
+			success : function(result){
+				item.parents('.form-group').slideUp(function(){
+					$(this).remove();
+				});
+				// Remover item do main
+				dom.main.find('#listItem_' + id).slideUp(function(){
+					$(this).remove();
+				});
+				// TODO : Reprocessar valor da lista
+			}, 
+			error : function(error){
+				console.log('Erro');
+				console.log(error);
+			}
+		});
+	}else{
+		item.parents('.form-group').slideUp(function(){
+			$(this).remove();
+		});
+	}
 }
 
 /**
@@ -73,7 +101,7 @@ var saveTodo = function(){
 		var item = {
 			"name" : $(item).find('.name').val() ,
 			"value" : valor,
-			"id" : $(item).find('.id').val() 
+			"id" : $(item).find('.id').val()
 		}
 		items.push( item );
 	});
@@ -111,14 +139,28 @@ var saveTodo = function(){
 
 var toogleCheck = function(itemId,target){
 	var item = $(target).find('span.glyphicon');
+	var data = new Object();
 	
-	if(item.hasClass('glyphicon-unchecked')){
-		item.removeClass('glyphicon-unchecked').addClass('glyphicon-check');
-	}else{
-		item.addClass('glyphicon-unchecked').removeClass('glyphicon-check');
-	}
+	data.id = itemId;
 	
-	// TODO : Implementar check / uncheck
+	$.ajax({
+		type: "PUT",
+		url: routes.item + '/' + itemId,
+		data: JSON.stringify(data),
+		dataType : 'json',
+		contentType: "application/json",
+		success : function(result){
+			if(item.hasClass('glyphicon-unchecked')){
+				item.removeClass('glyphicon-unchecked').addClass('glyphicon-check');
+			}else{
+				item.addClass('glyphicon-unchecked').removeClass('glyphicon-check');
+			}
+		}, 
+		error : function(error){
+			console.log('Erro');
+			console.log(error);
+		}
+	});
 }
 
 
@@ -160,4 +202,9 @@ var loadTodo = function(){
 
 $(document).ready(function(){
 	loadTodo();
+	
+	dom.modal.on('hidden.bs.modal', function (e) {
+		clearModal();
+	})
+	
 });

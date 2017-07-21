@@ -3,6 +3,7 @@ package br.com.rhfactor.todolist.rest;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.OptimisticLockException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -27,14 +28,14 @@ import br.com.rhfactor.todolist.services.IItemService;
 @Path("/items")
 public class ItemEndpoint {
 	
-	private IItemService em;
+	@Inject private IItemService em;
 
 	@POST
 	@Consumes("application/json")
-	public Response create(Item entity) {
-		em.persist(entity);
+	public Response create(Item item) {
+		em.persist(item);
 		return Response
-				.created(UriBuilder.fromResource(ItemEndpoint.class).path(String.valueOf(entity.getId())).build())
+				.created(UriBuilder.fromResource(ItemEndpoint.class).path(String.valueOf(item.getId())).build())
 				.build();
 	}
 
@@ -69,8 +70,8 @@ public class ItemEndpoint {
 	@PUT
 	@Path("/{id:[0-9][0-9]*}")
 	@Consumes("application/json")
-	public Response update(@PathParam("id") Long id, Item entity) {
-		if (entity == null) {
+	public Response update(@PathParam("id") Long id, Item item) {
+		if (item == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 		
@@ -78,16 +79,20 @@ public class ItemEndpoint {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 		
-		if (!id.equals(entity.getId())) {
-			return Response.status(Status.CONFLICT).entity(entity).build();
-		}
+//		if (!id.equals(entity.getId())) {
+//			return Response.status(Status.CONFLICT).entity(entity).build();
+//		}
 		
-		if (this.em.find(id) == null) {
+		Item itemDB = this.em.find(id);
+		if (itemDB == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 		
+		// Autorizar somente esta mudança de comportamento
+		itemDB.setDone( !itemDB.getDone() );
+		
 		try {
-			em.merge(entity);
+			em.merge(itemDB);
 		} catch (OptimisticLockException e) {
 			return Response.status(Response.Status.CONFLICT).entity(e.getEntity()).build();
 		}
