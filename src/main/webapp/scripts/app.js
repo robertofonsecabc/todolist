@@ -120,15 +120,14 @@ var saveTodo = function(){
 		success : function(result){
 			clearModal();
 			dom.modal.modal('hide');
-			if( data.id > 0 ){
+			if( result.id > 0 ){
 				dom.main.find('#todo_' + result.id ).slideUp(function(){
+					$(this).remove();
 					dom.main.append( Mustache.render( dom.templateList, result ) );
 				});
 			}else{
 				dom.main.append( Mustache.render( dom.templateList, result ) );
 			}
-			
-			
 		}, 
 		error : function(error){
 			console.log('Erro');
