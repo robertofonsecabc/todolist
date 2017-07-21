@@ -46,6 +46,7 @@ public class Todo implements Serializable {
 	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 
+	@XmlTransient
 	@Version
 	@Column(name = "version")
 	private int version;

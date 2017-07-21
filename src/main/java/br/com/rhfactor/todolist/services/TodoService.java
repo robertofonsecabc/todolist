@@ -1,5 +1,6 @@
 package br.com.rhfactor.todolist.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -12,7 +13,7 @@ import br.com.rhfactor.todolist.model.Todo;
 public class TodoService implements ITodoService {
 
 	private final ITodoDao dao;
-	
+
 	@Deprecated
 	public TodoService() {
 		this(null);
@@ -26,12 +27,7 @@ public class TodoService implements ITodoService {
 
 	@Override
 	public void persist(Todo todo) {
-		if( todo.getItems().size() > 0 ){
-			// Forçar os itens a terem o mesmo Todo
-			for( Item item : todo.getItems() ){
-				item.setTodo(todo);
-			}
-		}
+		calculateTotalAndForceParent(todo);
 		this.dao.persist(todo);
 	}
 
@@ -52,9 +48,24 @@ public class TodoService implements ITodoService {
 
 	@Override
 	public void merge(Todo todo) {
+		calculateTotalAndForceParent(todo);
 		this.dao.merge(todo);
 	}
-	
+
+	private void calculateTotalAndForceParent(Todo todo) {
+		BigDecimal total = new BigDecimal("0");
+		if (todo.getItems().size() > 0) {
+			// Forçar os itens a terem o mesmo Todo
+			for (Item item : todo.getItems()) {
+				item.setTodo(todo);
+				if (item.getValue() != null) {
+					total = total.add(item.getValue());
+				}
+			}
+		}
+		todo.setTotal(total);
+	}
+
 	@Override
 	public List<Todo> listAll() {
 		return this.dao.listAll(null, null);
@@ -64,7 +75,5 @@ public class TodoService implements ITodoService {
 	public List<Todo> listAll(Integer startPosition, Integer maxResult) {
 		return this.dao.listAll(startPosition, maxResult);
 	}
-
-	
 
 }

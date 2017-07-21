@@ -12,7 +12,8 @@ var dom = {
 	formTodo : $('#formTodo'),
 	itemContent : $('#itemContent'),
 	templateItem : $('#templateItem').html(),
-	todoName : $('#todoName')
+	name : $('#name'),
+	id : $('#id')
 }
 
 /**
@@ -32,7 +33,6 @@ var removeItem = function(item){
 	$( dom.itemContent.find('.form-group')[item] ).addClass('disabled').slideUp();
 }
 
-
 /**
 * Função responsável por limpar os dados do formulário
 **/
@@ -41,42 +41,69 @@ var clearModal = function(){
 	dom.itemContent.html(''); // Limpar os itens
 }
 
-
 /**
  * Adicionar um Todo
  */
 var saveTodo = function(){
+	Mustache.parse(dom.templateList);
 	
-	data = { "name" :  dom.todoName.val() , "items" : [] };
+	var data = new Object();
+	var items = [];
+	var total = 0;
+	
 	// Remover itens disableds
 	dom.itemContent.find('.form-group.disabled').remove();
-	// Push de Itens
+	
+	if( dom.itemContent.find('.form-group').length == 0 ){
+		// TODO : Implementar uma mensagem 
+		alert("Adicione um Item à lista");
+		return;
+	}
+	
+	// Push de Itens e somar os valores
 	dom.itemContent.find('.form-group').each(function( index , item ){
 		// TODO : Validar aqui se os dados estão corretos
+		var valor = parseFloat($(item).find('.value').val().replace(/([,])/g,"."));
+		
+		if( isNaN ( valor )){
+			valor = parseFloat("0.0");
+		}
+		
+		total+=valor;
 		var item = {
 			"name" : $(item).find('.name').val() ,
-			"value" : $(item).find('.value').val()
+			"value" : valor,
+			"id" : $(item).find('.id').val() 
 		}
-		data.items.push( item );
+		items.push( item );
 	});
-
 	
-	// Mustache.parse(dom.templateList); 
-	// dom.main.append( Mustache.render(dom.templateList, { } ) );
+	data.id = dom.id.val();
+	data.name = dom.name.val(); 
+	data.items = items;
+	data.total = total;
 	
 	$.ajax({
-		type: "POST",
-		url: routes.main,
-		data: data,
+		type: data.id>0?"PUT":"POST",
+		url: data.id>0?routes.main + '/' + data.id:routes.main,
+		data: JSON.stringify(data),
 		dataType : 'json',
 		contentType: "application/json",
 		success : function(result){
 			clearModal();
 			dom.modal.modal('hide');
-			// TODO : Adicionar o novo item
-			dom.main.append( Mustache.render(dom.templateList, data ) );
+			if( data.id > 0 ){
+				dom.main.find('#todo_' + result.id ).slideUp(function(){
+					dom.main.append( Mustache.render( dom.templateList, result ) );
+				});
+			}else{
+				dom.main.append( Mustache.render( dom.templateList, result ) );
+			}
+			
+			
 		}, 
 		error : function(error){
+			console.log('Erro');
 			console.log(error);
 		}
 	});
@@ -90,17 +117,35 @@ var toogleCheck = function(itemId,target){
 	}else{
 		item.addClass('glyphicon-unchecked').removeClass('glyphicon-check');
 	}
+	
+	// TODO : Implementar check / uncheck
 }
+
 
 var addEdit = function(i){
 	
-	dom.modal.modal('show');
+	Mustache.parse(dom.templateItem);
+	
 	
 	if( i == 0 ){
-		// Novo
-	}else{
-		console.log(i);
+		clearModal();
+		dom.modal.modal('show');
+		return;
 	}
+	
+	// Fazer busca de item
+	$.get( routes.main + "/" + i , function( data ) {
+
+		dom.formTodo.find('#id').val( data.id );
+		dom.formTodo.find('#name').val( data.name );
+		
+		for( i in data.items ){
+			dom.itemContent.append( Mustache.render(dom.templateItem, data.items[i] ) );
+		}
+		
+		dom.modal.modal('show');
+	});
+		
 }
 
 var loadTodo = function(){

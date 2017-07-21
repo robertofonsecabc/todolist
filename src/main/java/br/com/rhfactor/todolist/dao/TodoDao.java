@@ -53,7 +53,7 @@ public class TodoDao implements ITodoDao {
 
 	@Override
 	public List<Todo> listAll(Integer startPosition, Integer maxResult) {
-		TypedQuery<Todo> findAllQuery = this.em.createQuery("SELECT DISTINCT t FROM Todo t LEFT JOIN FETCH t.items ORDER BY t.id", Todo.class);
+		TypedQuery<Todo> findAllQuery = this.em.createQuery("SELECT DISTINCT t FROM Todo t LEFT JOIN FETCH t.items WHERE t.archived = false ORDER BY t.id", Todo.class);
 		if (startPosition != null) {
 			findAllQuery.setFirstResult(startPosition);
 		}

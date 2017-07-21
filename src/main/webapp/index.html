@@ -11,71 +11,72 @@
 </head>
 <body>
 	
-<div class="modal fade modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" onClick="clearModal();" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title">Todo List</h4>
-			</div>
-			<div class="modal-body">
-				<form name="formTodo" id="formTodo" class="form-horizontal" method="POST">
-					<div class="form-group">
-						<label for="recipient-name" class="col-sm-2 control-label">Name:</label>
-						<div class="col-sm-9">
-							<input class="form-control" type="text" name="todoName" id="todoName" value="">
-						</div>
-					</div>
-					
-					<hr/>
-					<div class="row">
-						<div class="col-xs-12">
-							 <button type="button" class="btn btn-default" onclick="addItem();"> <i class="glyphicon glyphicon-plus"></i> Adicionar Item</button>
-						</div>
-					</div>
-					<hr/>
-					<div id="itemContent">
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" onClick="clearModal();" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">Todo List</h4>
+				</div>
+				<div class="modal-body">
+					<form name="formTodo" id="formTodo" class="form-horizontal" method="POST">
 						
-					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal" onClick="clearModal();">Close</button>
-				<button type="button" class="btn btn-primary" onClick="saveTodo();" >Save changes</button>
+						<input type="hidden" name="id" id="id" value="" />
+					
+						<div class="form-group">
+							<label for="recipient-name" class="col-sm-2 control-label">Name:</label>
+							<div class="col-sm-9">
+								<input class="form-control" type="text" name="name" id="name" value="">
+							</div>
+						</div>
+						
+						<hr/>
+						<div class="row">
+							<div class="col-xs-12">
+								 <button type="button" class="btn btn-default" onclick="addItem();"> <i class="glyphicon glyphicon-plus"></i> Adicionar Item</button>
+							</div>
+						</div>
+						<hr/>
+						<div id="itemContent">
+							
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" onClick="clearModal();">Close</button>
+					<button type="button" class="btn btn-primary" onClick="saveTodo();" >Save changes</button>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-
-	<div id="wrap">
 		
-		<nav class="navbar navbar-default navbar-static-top">
-			<div class="container">
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="offcanvas">
-						<span class="sr-only">Toggle navigation</span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					<a class="navbar-brand" href="#">Todo Lists</a>
-				</div>
-				<div id="navbar" class="navbar-collapse collapse">
-					<ul class="nav navbar-nav navbar-right">
-					 	<li><a href="#" >Minhas listas</a></li>
-						<li><a href="#" onclick="addEdit(0);"><i class="glyphicon glyphicon-plus"></i> Nova Lista</a></li>
-					</ul>
-				</div>
-			</div>
-		</nav>
-		
+	<nav class="navbar navbar-default navbar-static-top">
 		<div class="container">
-			<div id="main" class="row">
-				
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="offcanvas">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">Todo Lists</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+				 	<li><a href="#" >Minhas listas</a></li>
+					<li><a href="#" onclick="addEdit(0);"><i class="glyphicon glyphicon-plus"></i> Nova Lista</a></li>
+				</ul>
 			</div>
 		</div>
+	</nav>
+		
+	<div class="container">
+		<div id="main" class="row">
+			
+		</div>
 	</div>
+
 	
 	<!-- 
 	<div id="footer">
@@ -87,7 +88,7 @@
 	
 	<!-- Template para itens -->
 	<script id="templateList" type="x-tmpl-mustache">
-		<div class="todolist col-xs-12 col-sm-4">
+		<div id="todo_{{ id }}" class="todolist col-xs-12 col-sm-4">
 			<div class="content">
 				<h2>{{ name }}</h2>
 				<ul class="list-unstyled">
@@ -102,9 +103,12 @@
 				</ul>
 				<div class="operations">
 					<div class="btn-group" role="group">
+						<!-- TODO: Adicionar arquivar -->
+						<!--
 						<button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Archive">
 							<span class="glyphicon glyphicon-circle-arrow-down"></span>
 						</button>
+						-->
 						<button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Edit" onClick="addEdit({{ id }})">
 							<span class="glyphicon glyphicon-pencil"></span>
 						</button>
@@ -119,18 +123,21 @@
 
 	<script id="templateItem" type="x-tmpl-mustache">
 		<div class="form-group">
-			<label for="recipient-name" class="col-sm-2 control-label">Item:</label>
+			<label for="recipient-name" class="col-sm-2 control-label">
+				<input type="hidden" class="id" id="item_{{ id }}_id" id="item_{{ id }}_id" value="{{ id }}" />
+				Item:
+			</label>
 			<div class="col-sm-4">
-				<input class="form-control name" type="text" name="items_{{ item }}_name" id="items_{{ item }}_name" value="" />
+				<input class="form-control name" type="text" name="items_{{ id }}_name" id="items_{{ id }}_name" value="{{ name }}" />
 			</div>
 			<div class="col-sm-4">
 				<div class="input-group">
 					<span class="input-group-addon">R$</span>
-					<input class="form-control value" type="text" name="items_{{ item }}_value" id="items_{{ item }}_value" value="" />
+					<input class="form-control value" type="text" name="items_{{ id }}_value" id="items_{{ item }}_value" value="{{ value }}" />
 				</div>
 			</div>
 			<div class="col-sm-1">
-				 <button type="button" class="btn btn-default" onClick="removeItem({{ item }})" ><i class="glyphicon glyphicon-remove"></i></button>
+				 <button type="button" class="btn btn-default" onClick="removeItem({{ id }})" ><i class="glyphicon glyphicon-remove"></i></button>
 			</div>
 		</div>
 	</script>

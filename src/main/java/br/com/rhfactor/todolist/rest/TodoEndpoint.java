@@ -12,10 +12,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
-
 import br.com.rhfactor.todolist.model.Todo;
 import br.com.rhfactor.todolist.services.ITodoService;
 
@@ -32,7 +31,8 @@ public class TodoEndpoint {
 	@Consumes("application/json")
 	public Response create(Todo todo) {
 		this.todoService.persist(todo);
-		return Response.created(UriBuilder.fromResource(TodoEndpoint.class).path(String.valueOf(todo.getId())).build()).build();
+		//return Response.created(UriBuilder.fromResource(TodoEndpoint.class).path(String.valueOf(todo.getId())).build()).build();
+		return Response.ok(todo, MediaType.APPLICATION_JSON).build();
 	}
 
 	@DELETE
@@ -68,24 +68,34 @@ public class TodoEndpoint {
 	@Path("/{id:[0-9][0-9]*}")
 	@Consumes("application/json")
 	public Response update(@PathParam("id") Long id, Todo todo) {
+		
 		if (todo == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 		if (id == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
-		if (!id.equals(todo.getId())) {
-			return Response.status(Status.CONFLICT).entity(todo).build();
-		}
-		if (this.todoService.find(id) == null) {
+		
+		// if ( !id.equals(todo.getId()) ) {
+		// 	return Response.status(Status.CONFLICT).entity(todo).build();
+		// }
+		
+		Todo todoDB = this.todoService.find(id);
+				
+		if (todoDB == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
+		
+		todoDB.setName(todo.getName());
+		todoDB.setItems( todo.getItems() );
+		
 		try {
-			this.todoService.merge(todo);
+			this.todoService.merge(todoDB);
 		} catch (OptimisticLockException e) {
-			return Response.status(Response.Status.CONFLICT).entity(e.getEntity()).build();
+			e.printStackTrace();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getEntity()).build();
 		}
 
-		return Response.noContent().build();
+		return Response.ok(todo, MediaType.APPLICATION_JSON).build();
 	}
 }
